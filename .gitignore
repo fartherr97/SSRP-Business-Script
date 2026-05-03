@@ -1,0 +1,47 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs / runtime output
+*.log
+logs/
+crashdumps/
+
+# Environment / private local config
+.env
+.env.*
+config.local.lua
+*.local.lua
+
+# Node tooling, if the NUI is later moved to a build step
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+.vite/
+
+# FiveM / txAdmin / server runtime folders
+cache/
+server-cache/
+server-cache-priv/
+txData/
+resources/[local]/*/cache/
+
+# Database dumps and backups
+*.sql.gz
+*.dump
+*.bak
+*.backup
+
+# Temporary archives
+*.zip
+*.rar
+*.7z
