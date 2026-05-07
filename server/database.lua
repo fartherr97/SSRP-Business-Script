@@ -4,16 +4,39 @@ local function dbResource()
     return Config.Database.Resource or Config.Database.Driver or 'oxmysql'
 end
 
-local function databaseReady()
+local lastDatabaseWarning = 0
+
+local function warnDatabase(message)
+    local now = os.time()
+    if now - lastDatabaseWarning >= 15 then
+        print(('[ssrp_business] %s'):format(message))
+        lastDatabaseWarning = now
+    end
+end
+
+local function waitForDatabase()
     if Config.Database.Driver ~= 'oxmysql' then
-        print(('[ssrp_business] Unsupported database driver "%s". Configure server/database.lua for your driver.'):format(tostring(Config.Database.Driver)))
+        warnDatabase(('Unsupported database driver "%s". Configure server/database.lua for your driver.'):format(tostring(Config.Database.Driver)))
         return false
     end
 
     local resource = dbResource()
+    local waitMs = tonumber(Config.Database.WaitForStartMs) or 30000
+    local deadline = os.time() + math.max(0, math.ceil(waitMs / 1000))
     local state = GetResourceState(resource)
-    if state ~= 'started' and state ~= 'starting' then
-        print(('[ssrp_business] Database resource "%s" is not started.'):format(resource))
+
+    while state ~= 'started' do
+        if waitMs <= 0 or os.time() >= deadline then
+            warnDatabase(('Database resource "%s" is "%s", not "started". Ensure oxmysql before this resource and check oxmysql connection logs.'):format(resource, state))
+            return false
+        end
+
+        Wait(250)
+        state = GetResourceState(resource)
+    end
+
+    if not exports[resource] then
+        warnDatabase(('Database resource "%s" is started but exports are unavailable. Check oxmysql installation.'):format(resource))
         return false
     end
 
@@ -22,7 +45,7 @@ end
 
 local function safeCall(exportName, fallback, sql, params, cb)
     cb = cb or function() end
-    if not databaseReady() then
+    if not waitForDatabase() then
         cb(fallback)
         return
     end

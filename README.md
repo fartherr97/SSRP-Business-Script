@@ -23,6 +23,8 @@ Use `ensure ssrp_business` instead if your resource folder is named `ssrp_busine
    - `Config.AFK`
    - `Config.BusinessRules`
 
+If the console says `Database resource "oxmysql" is "missing"`, the folder name or txAdmin resource path is wrong. If it says `stopped`, `uninitialized`, or never reaches `started`, run `ensure oxmysql` from console and check oxmysql's own database connection errors before restarting this resource with `restart Businesspro`.
+
 ## Commands
 
 - `/business` opens the owner/employee UI.

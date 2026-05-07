@@ -4,7 +4,8 @@ Config.Debug = false
 
 Config.Database = {
     Driver = 'oxmysql',
-    Resource = 'oxmysql'
+    Resource = 'oxmysql',
+    WaitForStartMs = 30000
 }
 
 Config.Admin = {
