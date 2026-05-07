@@ -4,16 +4,19 @@ FiveM resource for SSRP-style business management, employee payroll rosters, shi
 
 ## Install
 
-1. Put this folder in your resources directory, ideally named `ssrp_business`.
+1. Put this folder in your resources directory. The recommended resource folder name is `ssrp_business`, but `Businesspro` is fine if that is what your server uses.
 2. Import [sql/ssrp_business.sql](sql/ssrp_business.sql) into your oxmysql database.
-3. Add this to `server.cfg` after oxmysql:
+3. Install `oxmysql` if your server does not already have it. The folder/resource must be named exactly `oxmysql`.
+4. Add this to `server.cfg` after oxmysql:
 
 ```cfg
 ensure oxmysql
-ensure ssrp_business
+ensure Businesspro
 ```
 
-4. Configure [config.lua](config.lua):
+Use `ensure ssrp_business` instead if your resource folder is named `ssrp_business`.
+
+5. Configure [config.lua](config.lua):
    - `Config.Admin.AcePermissions`
    - `Config.Admin.DiscordRoleIds`
    - `Config.BusinessTypes`
@@ -36,7 +39,23 @@ FiveM does not expose Discord roles natively. If you use a bridge such as `Badge
 
 ## Hybrid Pay Integration
 
-This resource does not set pay amounts. Your existing SSRP Hybrid Pay system should read shift state through exports:
+This resource does not set pay amounts. Your existing SSRP Hybrid Pay system should read shift state through exports.
+
+If your folder is named `Businesspro`, use:
+
+```lua
+local src = source
+
+if exports['Businesspro']:IsPlayerOnBusinessShift(src) then
+    local business = exports['Businesspro']:GetPlayerActiveBusiness(src)
+
+    if business and exports['Businesspro']:CanReceiveBusinessPay(src) then
+        -- Apply your existing altered salary logic here.
+    end
+end
+```
+
+If your folder is named `ssrp_business`, use:
 
 ```lua
 local src = source
